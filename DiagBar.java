@@ -11,6 +11,11 @@ public class DiagBar {
     private ArrayList<Integer> values;        // list of bar values
     private ArrayList<Color> colors;          // list of bar colors
 
+    private ArrayList<String> brand = new ArrayList<>();
+    private ArrayList<Integer> stockValue = new ArrayList<>();
+    private ArrayList<String> type = new ArrayList<>();
+
+
 
     /**
      * Créé un nouveau diagramme à barre.
@@ -57,7 +62,10 @@ public class DiagBar {
      * @param category la catégorie de la barre
      */
     public void add(String name, int value, String category) {
-        // votre code ici
+            brand.add(name);
+            stockValue.add(value);
+            type.add(category);
+
     }
 
     public void draw() {
@@ -68,7 +76,7 @@ public class DiagBar {
     public static void main(String[] args) {
         // création du diagramme
         String title = "Famous brands";
-        String xAxis = "stock value $(million)";
+        String xAxis = "Stock value $(million)";
         String source = "Source: Interbrand website";
         DiagBar diag = new DiagBar(title, xAxis, source);
         diag.setCaption("2000-01-01");
