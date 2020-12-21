@@ -38,7 +38,9 @@ public class DiagBar {
      * Permet de réinitialiser un DiagBar
      */
     public void reset() {
-        // votre code ici
+        brand.clear();
+        stockValue.clear();
+        type.clear();
     }
 
     /**
