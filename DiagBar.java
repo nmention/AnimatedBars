@@ -50,7 +50,7 @@ public class DiagBar {
      * @param caption the caption
      */
     public void setCaption(String caption) {
-        // votre code ici
+        this.caption = caption;
     }
 
     /**
