@@ -13,7 +13,8 @@ public class DiagBar {
 
     private ArrayList<String> brand = new ArrayList<>();
     private ArrayList<Integer> stockValue = new ArrayList<>();
-    private ArrayList<String> type = new ArrayList<>();
+    private ArrayList<String> category = new ArrayList<>();
+    private HashMap<String, Color> colorTable = new HashMap<>();
 
     int maximumStockValue = 0;
 
@@ -40,7 +41,7 @@ public class DiagBar {
     public void reset() {
         brand.clear();
         stockValue.clear();
-        type.clear();
+        category.clear();
     }
 
     /**
@@ -64,12 +65,18 @@ public class DiagBar {
      * @param category la catégorie de la barre
      */
     public void add(String name, int value, String category) {
-            brand.add(name);
-            stockValue.add(value);
-            type.add(category);
+            this.brand.add(name);
+            this.stockValue.add(value);
+            this.category.add(category);
             if (value > maximumStockValue) {
                 maximumStockValue = value;
             }
+
+            if(!colorTable.containsKey(category)){
+                Color selected = BarColors.colors[colorTable.size() % BarColors.colors.length];
+                colorTable.put(category, selected);
+            }
+
     }
 
     public void draw() {
