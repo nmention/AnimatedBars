@@ -15,7 +15,7 @@ public class DiagBar {
     private ArrayList<Integer> stockValue = new ArrayList<>();
     private ArrayList<String> type = new ArrayList<>();
 
-
+    int maximumStockValue = 0;
 
     /**
      * Créé un nouveau diagramme à barre.
@@ -67,7 +67,9 @@ public class DiagBar {
             brand.add(name);
             stockValue.add(value);
             type.add(category);
-
+            if (value > maximumStockValue) {
+                maximumStockValue = value;
+            }
     }
 
     public void draw() {
