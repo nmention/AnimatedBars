@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DiagBar {
 
@@ -21,7 +22,7 @@ public class DiagBar {
     /**
      * Créé un nouveau diagramme à barre.
      *
-     * @param title le titre
+     * @param title      le titre
      * @param xAxisLabel la légende de l'axe horizontal
      * @param dataSource l'origine des données
      */
@@ -65,22 +66,36 @@ public class DiagBar {
      * @param category la catégorie de la barre
      */
     public void add(String name, int value, String category) {
-            this.brand.add(name);
-            this.stockValue.add(value);
-            this.category.add(category);
-            if (value > maximumStockValue) {
-                maximumStockValue = value;
-            }
+        this.brand.add(name);
+        this.stockValue.add(value);
+        this.category.add(category);
+        if (value > maximumStockValue) {
+            maximumStockValue = value;
+        }
 
-            if(!colorTable.containsKey(category)){
-                Color selected = BarColors.colors[colorTable.size() % BarColors.colors.length];
-                colorTable.put(category, selected);
-            }
+        if (!colorTable.containsKey(category)) {
+            Color selected = BarColors.colors[colorTable.size() % BarColors.colors.length];
+            colorTable.put(category, selected);
+        }
 
     }
 
     public void draw() {
-        // votre code ici
+        double xscale = maximumStockValue + (maximumStockValue * 0.2);
+        double yscale = brand.size()*5 + brand.size()*0.05*5;
+        StdDraw.setXscale(0, xscale);
+        StdDraw.setYscale(0, yscale);
+        StdDraw.text(xscale/2,yscale - yscale * 0.01,title);
+        StdDraw.textRight(xscale,yscale * 0.05,dataSource);
+        StdDraw.textLeft(0, yscale- yscale * 0.03, xAxisLabel);
+        for (int i = 0; i < brand.size(); i++) {
+            StdDraw.setPenColor(colorTable.get(category.get(i)));
+            StdDraw.filledRectangle((double) stockValue.get(i) / 2, (double) 5*(i+0.5), (double) stockValue.get(i) / 2, (double) 2);
+            StdDraw.setPenColor();
+            StdDraw.textRight((double) stockValue.get(i) - xscale * 0.01,(double) 5*(i + 0.5) , brand.get(i));
+            StdDraw.textRight(xscale,yscale * 0.1,caption);
+            StdDraw.textLeft((double) stockValue.get(i) + (double) stockValue.get(i) * 0.01,(double) 5*(i + 0.5), Integer.toString(stockValue.get(i)));
+        }
     }
 
     // Exemple pour mise au point
@@ -93,22 +108,22 @@ public class DiagBar {
         diag.setCaption("2000-01-01");
 
         // ajout des barres suivantes au diagramme
-        diag.add("adidas",3791,"Sporting Goods");
-        diag.add("Amazon",4528,"Retail");
-        diag.add("American Express",16122,"Financial Services");
-        diag.add("AOL",4531,"Media");
-        diag.add("Apple",6594,"Technology");
-        diag.add("AT&T",25548,"Telecommunications");
-        diag.add("Bacardi",3187,"Alcohol");
-        diag.add("Barbie",2315,"Toys & Games");
-        diag.add("BMW",12969,"Automotive");
-        diag.add("BP",3066,"Energy");
-        diag.add("Budweiser",10684,"Alcohol");
-        diag.add("Burger King",2701,"Restaurants");
-        diag.add("Chanel",4141,"Luxury");
+        diag.add("adidas", 3791, "Sporting Goods");
+        diag.add("Amazon", 4528, "Retail");
+        diag.add("American Express", 16122, "Financial Services");
+        diag.add("AOL", 4531, "Media");
+        diag.add("Apple", 6594, "Technology");
+        diag.add("AT&T", 25548, "Telecommunications");
+        diag.add("Bacardi", 3187, "Alcohol");
+        diag.add("Barbie", 2315, "Toys & Games");
+        diag.add("BMW", 12969, "Automotive");
+        diag.add("BP", 3066, "Energy");
+        diag.add("Budweiser", 10684, "Alcohol");
+        diag.add("Burger King", 2701, "Restaurants");
+        diag.add("Chanel", 4141, "Luxury");
 
         // rendu du diagramme
-        StdDraw.setCanvasSize(1000, 700);
+        StdDraw.setCanvasSize(1280, 800);
         StdDraw.enableDoubleBuffering();
         diag.draw();
         StdDraw.show();
