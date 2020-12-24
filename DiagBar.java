@@ -1,7 +1,10 @@
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.lang.reflect.Array;
+import java.util.*;
 
+/**
+ * Represent a diagram of bars
+ */
 public class DiagBar {
 
     private final String title;               // bar chart title
@@ -11,13 +14,11 @@ public class DiagBar {
     private ArrayList<String> names;          // list of bar names
     private ArrayList<Integer> values;        // list of bar values
     private ArrayList<Color> colors;          // list of bar colors
+    private int nBars;
+    private boolean sorted;
 
-    private ArrayList<String> brand = new ArrayList<>();
-    private ArrayList<Integer> stockValue = new ArrayList<>();
-    private ArrayList<String> category = new ArrayList<>();
+    private ArrayList<Bar> barList = new ArrayList<>();
     private HashMap<String, Color> colorTable = new HashMap<>();
-
-    int maximumStockValue = 0;
 
     /**
      * Créé un nouveau diagramme à barre.
@@ -25,14 +26,18 @@ public class DiagBar {
      * @param title      le titre
      * @param xAxisLabel la légende de l'axe horizontal
      * @param dataSource l'origine des données
+     * @param nBars The number of bars to display
+     * @param sorted Display the bars sorted in descending order
      */
-    public DiagBar(String title, String xAxisLabel, String dataSource) {
+    public DiagBar(String title, String xAxisLabel, String dataSource, int nBars, boolean sorted) {
         if (title == null) throw new IllegalArgumentException("name is null");
         if (xAxisLabel == null) throw new IllegalArgumentException("x-axis label is null");
         if (dataSource == null) throw new IllegalArgumentException("data source is null");
         this.title = title;
         this.xAxisLabel = xAxisLabel;
         this.dataSource = dataSource;
+        this.nBars = nBars;
+        this.sorted = sorted;
         reset();
     }
 
@@ -40,9 +45,8 @@ public class DiagBar {
      * Permet de réinitialiser un DiagBar
      */
     public void reset() {
-        brand.clear();
-        stockValue.clear();
-        category.clear();
+        StdDraw.clear();
+        barList.clear();
     }
 
     /**
@@ -66,36 +70,49 @@ public class DiagBar {
      * @param category la catégorie de la barre
      */
     public void add(String name, int value, String category) {
-        this.brand.add(name);
-        this.stockValue.add(value);
-        this.category.add(category);
-        if (value > maximumStockValue) {
-            maximumStockValue = value;
-        }
-
-        if (!colorTable.containsKey(category)) {
-            Color selected = BarColors.colors[colorTable.size() % BarColors.colors.length];
-            colorTable.put(category, selected);
-        }
-
+        Bar bar = new Bar(name, value, category);
+        this.add(bar);
     }
 
+    /**
+     * Add a bar
+     * @param bar The bar to add
+     */
+    public void add(Bar bar) {
+        barList.add(bar);
+
+        if (!colorTable.containsKey(bar.getCategory())) {
+            Color selected = BarColors.colors[colorTable.size() % BarColors.colors.length];
+            colorTable.put(bar.getCategory(), selected);
+        }
+    }
+
+    /**
+     * Draw the diagram in its current state
+     */
     public void draw() {
+        if(sorted) {
+            barList.sort(Collections.reverseOrder());
+        }
+        int maximumStockValue = Collections.max(barList).getValue();
+        int barCount = Math.min(nBars, barList.size());
+
         double xscale = maximumStockValue + (maximumStockValue * 0.2);
-        double yscale = brand.size()*5 + brand.size()*0.05*5;
+        double yscale = barCount*5 + barCount*0.05*5;
         StdDraw.setXscale(0, xscale);
         StdDraw.setYscale(0, yscale);
         StdDraw.text(xscale/2,yscale - yscale * 0.01,title);
         StdDraw.textRight(xscale,yscale * 0.05,dataSource);
         StdDraw.textLeft(0, yscale- yscale * 0.03, xAxisLabel);
-        for (int i = 0; i < brand.size(); i++) {
-            StdDraw.setPenColor(colorTable.get(category.get(i)));
-            StdDraw.filledRectangle((double) stockValue.get(i) / 2, (double) 5*(i+0.5), (double) stockValue.get(i) / 2, (double) 2);
+        for (int i = 0; i < barCount; i++) {
+            StdDraw.setPenColor(colorTable.get(barList.get(i).getCategory()));
+            StdDraw.filledRectangle((double) barList.get(i).getValue() / 2, (double) 5*((barCount - i) - 0.5), (double) barList.get(i).getValue() / 2, (double) 2);
             StdDraw.setPenColor();
-            StdDraw.textRight((double) stockValue.get(i) - xscale * 0.01,(double) 5*(i + 0.5) , brand.get(i));
+            StdDraw.textRight((double) barList.get(i).getValue() - xscale * 0.01,(double) 5*((barCount - i) - 0.5) , barList.get(i).getName());
             StdDraw.textRight(xscale,yscale * 0.1,caption);
-            StdDraw.textLeft((double) stockValue.get(i) + (double) stockValue.get(i) * 0.01,(double) 5*(i + 0.5), Integer.toString(stockValue.get(i)));
+            StdDraw.textLeft((double) barList.get(i).getValue() + (double) barList.get(i).getValue() * 0.01,(double) 5*((barCount - i) - 0.5), Integer.toString(barList.get(i).getValue()));
         }
+        StdDraw.show();
     }
 
     // Exemple pour mise au point
@@ -104,7 +121,7 @@ public class DiagBar {
         String title = "Famous brands";
         String xAxis = "Stock value $(million)";
         String source = "Source: Interbrand website";
-        DiagBar diag = new DiagBar(title, xAxis, source);
+        DiagBar diag = new DiagBar(title, xAxis, source, 15, true);
         diag.setCaption("2000-01-01");
 
         // ajout des barres suivantes au diagramme
